@@ -39,6 +39,31 @@ class FlightPage extends StatelessWidget {
     required this.buildNumber,
   });
 
+  void showContentDialog(BuildContext context) async {
+    await showDialog<String>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('Delete file permanently?'),
+        content: const Text(
+          'If you delete this file, you won\'t be able to recover it. Do you want to delete it?',
+        ),
+        actions: [
+          Button(
+            child: const Text('Delete'),
+            onPressed: () {
+              Navigator.pop(context, 'User deleted file');
+              // Delete file here
+            },
+          ),
+          FilledButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context, 'User canceled dialog'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FluentTheme(
@@ -63,6 +88,10 @@ class FlightPage extends StatelessWidget {
         bottomBar: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Button(
+              child: const Text('Show dialog'),
+              onPressed: () => showContentDialog(context),
+            ),
             Container(
               padding: const EdgeInsets.all(10.0),
               child: Button(
@@ -97,16 +126,6 @@ class FlightPage extends StatelessWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.only(right: 30),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            right: BorderSide(
-                              color: FluentTheme.of(
-                                context,
-                              ).resources.controlStrokeColorSecondary,
-                              width: 1,
-                            ),
-                          ),
-                        ),
                         child: Column(
                           spacing: 20,
                           children: [
@@ -295,15 +314,27 @@ class FlightPage extends StatelessWidget {
                 //
                 //display flight data
                 Expanded(
-                  child: Column(
-                    children: [
-                      FlightDataDisplay(
-                        vaUrl: vaUrl,
-                        apiKey: apiKey,
-                        pirepID: flightID,
-                        connectionType: connectionType,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                          color: FluentTheme.of(
+                            context,
+                          ).resources.controlStrokeColorSecondary,
+                          width: 1,
+                        ),
                       ),
-                    ],
+                    ),
+                    child: Column(
+                      children: [
+                        FlightDataDisplay(
+                          vaUrl: vaUrl,
+                          apiKey: apiKey,
+                          pirepID: flightID,
+                          connectionType: connectionType,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
