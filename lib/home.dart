@@ -703,10 +703,8 @@ class _HomePageState extends State<HomePage> {
                             enabled: false,
                             placeholder: AppLocalizations.of(context)!.noFares,
                             style: TextStyle(
-                              fontFamily: 'Arial',
                               fontSize: 24.0,
                               color: Color(0xFF5178BE),
-                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ),
