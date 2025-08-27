@@ -1,4 +1,3 @@
-import 'package:f_acars/main.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:f_acars/l10n/app_localizations.dart';
 import 'package:f_acars/Flight/display_flight_data.dart';
@@ -12,7 +11,6 @@ class FlightPage extends StatelessWidget {
   final String arrAirport;
   final int blockFuel;
   final int weightUnit;
-  final int connectionType;
   final String route;
   final List<dynamic> fares;
   final String apiKey;
@@ -30,7 +28,6 @@ class FlightPage extends StatelessWidget {
     required this.arrAirport,
     required this.blockFuel,
     required this.weightUnit,
-    required this.connectionType,
     required this.route,
     required this.fares,
     required this.apiKey,
@@ -38,31 +35,6 @@ class FlightPage extends StatelessWidget {
 
     required this.buildNumber,
   });
-
-  void showContentDialog(BuildContext context) async {
-    await showDialog<String>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('Delete file permanently?'),
-        content: const Text(
-          'If you delete this file, you won\'t be able to recover it. Do you want to delete it?',
-        ),
-        actions: [
-          Button(
-            child: const Text('Delete'),
-            onPressed: () {
-              Navigator.pop(context, 'User deleted file');
-              // Delete file here
-            },
-          ),
-          FilledButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.pop(context, 'User canceled dialog'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,34 +57,6 @@ class FlightPage extends StatelessWidget {
             style: FluentTheme.of(context).typography.titleLarge,
           ),
         ),
-        bottomBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Button(
-              child: const Text('Show dialog'),
-              onPressed: () => showContentDialog(context),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10.0),
-              child: Button(
-                child: Row(
-                  spacing: 7,
-                  children: [
-                    Text(AppLocalizations.of(context)!.quit),
-                    Icon(FluentIcons.clear),
-                  ],
-                ),
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    FluentPageRoute(builder: (context) => MyApp()),
-                    (route) => false,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
         children: [
           SizedBox(
             child: Row(
@@ -125,7 +69,7 @@ class FlightPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(right: 30),
+                        padding: EdgeInsets.only(right: 10),
                         child: Column(
                           spacing: 20,
                           children: [
@@ -315,6 +259,7 @@ class FlightPage extends StatelessWidget {
                 //display flight data
                 Expanded(
                   child: Container(
+                    padding: EdgeInsets.only(left: 30),
                     decoration: BoxDecoration(
                       border: Border(
                         left: BorderSide(
@@ -331,7 +276,6 @@ class FlightPage extends StatelessWidget {
                           vaUrl: vaUrl,
                           apiKey: apiKey,
                           pirepID: flightID,
-                          connectionType: connectionType,
                         ),
                       ],
                     ),

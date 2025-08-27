@@ -28,7 +28,6 @@ class SettingsPageState extends State<SettingsPage> {
   AnimationController? _animationController;
   Future? _testFuture;
   int weightUnit = 0; //0=lbs, 1=kg
-  int connectionType = 0; //0=x64, 1=x32
 
   @override
   void initState() {
@@ -66,7 +65,6 @@ class SettingsPageState extends State<SettingsPage> {
       final localeCode = jsonSettings['locale'];
       setState(() {
         weightUnit = jsonSettings['weightUnit'] ?? 0;
-        connectionType = jsonSettings['connectionType'] ?? 0;
       });
       if (localeCode != null) {
         _selectedLocale = Locale(localeCode);
@@ -292,40 +290,6 @@ class SettingsPageState extends State<SettingsPage> {
               items: [
                 ComboBoxItem(value: 0, child: Text('lbs')),
                 ComboBoxItem(value: 1, child: Text('kg')),
-              ],
-            ),
-            SizedBox(height: 20),
-
-            //select weight unit
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(AppLocalizations.of(context)!.connectionType),
-                Tooltip(
-                  message: AppLocalizations.of(context)!.connectionTypeTip,
-                  displayHorizontally: true,
-                  useMousePosition: false,
-                  style: const TooltipThemeData(preferBelow: true),
-                  child: const Icon(FluentIcons.info, size: 12.0),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-
-            //select fsuipc connection type combo box
-            ComboBox(
-              value: connectionType,
-              onChanged: (int? value) {
-                setState(() {
-                  connectionType = value!;
-                  _saveSettings('connectionType', value);
-                });
-              },
-              items: [
-                ComboBoxItem(value: 0, child: Text('x64')),
-                ComboBoxItem(value: 1, child: Text('x32')),
               ],
             ),
 

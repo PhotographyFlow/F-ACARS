@@ -7,6 +7,11 @@ import 'dart:convert';
 import 'dart:async';
 
 class WebComm {
+  //
+  //
+  //
+  //
+  //
   Future testConnection(
     TextEditingController vaUrlController,
     TextEditingController apiKeyController,
@@ -79,6 +84,11 @@ class WebComm {
     return testConnnectionError;
   }
 
+  //
+  //
+  //
+  //
+  //
   Future getBids(
     String vaUrlController,
     String apiKeyController,
@@ -173,6 +183,11 @@ class WebComm {
     }
   }
 
+  //
+  //
+  //
+  //
+  //
   Future prefilePireps(
     String vaUrlController,
     String apiKeyController,
@@ -242,6 +257,11 @@ class WebComm {
     }
   }
 
+  //
+  //
+  //
+  //
+  //
   Future updatePosition(
     String vaUrlController,
     String apiKeyController,
@@ -261,7 +281,7 @@ class WebComm {
     BuildContext context,
   ) async {
     try {
-      final response = await post(
+      await post(
         Uri.parse('$vaUrlController/api/pireps/$pirepID/acars/position'),
         headers: {
           'Content-Type': 'application/json',
@@ -277,21 +297,167 @@ class WebComm {
               "heading": trueHeading,
               "fuel": totalFuel,
               "sim_time":
-                  "$zuluYear-$zuluMonth-$zuluDay T$zuluHour:$zuluMinute:$zuluSecond Z",
+                  "$zuluYear-$zuluMonth-${zuluDay}T$zuluHour:$zuluMinute:${zuluSecond}Z",
             },
           ],
         }),
       );
       if (kDebugMode) {
         print('Position updated');
-        print(response.body);
       }
     } catch (e) {
       return e;
     }
   }
+
+  //
+  //
+  //
+  //
+  //
+  Future updatePirep(
+    String vaUrlController,
+    String apiKeyController,
+    String pirepID,
+    double flightDistance,
+    int fuelUsed,
+    int flightTime,
+    BuildContext context,
+  ) async {
+    try {
+      await post(
+        Uri.parse('$vaUrlController/api/pireps/$pirepID/update'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKeyController,
+        },
+        body: jsonEncode({
+          "distance": flightDistance,
+          "fuel_used": fuelUsed,
+          "flight_time": flightTime,
+        }),
+      );
+      if (kDebugMode) {
+        print('flight data updated');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return e;
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  Future updateStatus(
+    String vaUrlController,
+    String apiKeyController,
+    String pirepID,
+    String status,
+  ) async {
+    try {
+      await post(
+        Uri.parse('$vaUrlController/api/pireps/$pirepID/update'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKeyController,
+        },
+        body: jsonEncode({"status": status}),
+      );
+      if (kDebugMode) {
+        print('Status updated');
+      }
+    } catch (e) {
+      return e;
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  Future fileCompletePirepWithBlockTime(
+    String vaUrlController,
+    String apiKeyController,
+    String pirepID,
+    int flightTime,
+    int fuelUsed,
+    double flightDistance,
+    String offBlockTime,
+    String onBlockTime,
+    int landingRate,
+  ) async {
+    try {
+      await post(
+        Uri.parse('$vaUrlController/api/pireps/$pirepID/file'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKeyController,
+        },
+        body: jsonEncode({
+          "flight_time": flightTime,
+          "fuel_used": fuelUsed,
+          "distance": flightDistance,
+          "block_off_time": offBlockTime,
+          "block_on_time": onBlockTime,
+          "landing_rate": landingRate,
+        }),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return e;
+    }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  Future fileCompletePirep(
+    String vaUrlController,
+    String apiKeyController,
+    String pirepID,
+    int flightTime,
+    int fuelUsed,
+    double flightDistance,
+    int landingRate,
+  ) async {
+    try {
+      await post(
+        Uri.parse('$vaUrlController/api/pireps/$pirepID/file'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKeyController,
+        },
+        body: jsonEncode({
+          "flight_time": flightTime,
+          "fuel_used": fuelUsed,
+          "distance": flightDistance,
+          "landing_rate": landingRate,
+        }),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return e;
+    }
+  }
 }
 
+//
+//
+//
+//
+//
 void showPrefileError(BuildContext context, e) async {
   await showDialog<String>(
     context: context,

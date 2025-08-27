@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:f_acars/flight_sim_comm.dart';
 import 'package:f_acars/web_comm.dart';
+import 'package:f_acars/main.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -12,7 +13,9 @@ class FlightData {
   int radioAltitude;
   double gpsLat;
   double gpsLon;
+  double flightDistance;
   int totalFuel;
+  int fuelUsed;
   int trueHeading;
   int zuluYear;
   int zuluMonth;
@@ -20,6 +23,9 @@ class FlightData {
   int zuluHour;
   int zuluMinute;
   int zuluSecond;
+  int flightTime;
+  String offBlockTime;
+  String onBlockTime;
   bool isOnGround;
   bool isEngOn;
   int landingVS;
@@ -33,7 +39,9 @@ class FlightData {
     required this.radioAltitude,
     required this.gpsLat,
     required this.gpsLon,
+    required this.flightDistance,
     required this.totalFuel,
+    required this.fuelUsed,
     required this.trueHeading,
     required this.zuluYear,
     required this.zuluMonth,
@@ -41,6 +49,9 @@ class FlightData {
     required this.zuluHour,
     required this.zuluMinute,
     required this.zuluSecond,
+    required this.flightTime,
+    required this.offBlockTime,
+    required this.onBlockTime,
     required this.isOnGround,
     required this.isEngOn,
     required this.landingVS,
@@ -53,7 +64,6 @@ class FlightDataDisplay extends StatefulWidget {
   final String vaUrl;
   final String apiKey;
   final String pirepID;
-  final int connectionType;
   static int webUploadDelay = 1;
 
   const FlightDataDisplay({
@@ -61,7 +71,6 @@ class FlightDataDisplay extends StatefulWidget {
     required this.vaUrl,
     required this.apiKey,
     required this.pirepID,
-    required this.connectionType,
   });
 
   @override
@@ -80,7 +89,9 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
       radioAltitude: 0,
       gpsLat: 0.0,
       gpsLon: 0.0,
+      flightDistance: 0.0,
       totalFuel: 0,
+      fuelUsed: 0,
       trueHeading: 0,
       zuluYear: 0,
       zuluMonth: 0,
@@ -88,11 +99,14 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
       zuluHour: 0,
       zuluMinute: 0,
       zuluSecond: 0,
+      flightTime: 0,
+      offBlockTime: 'N/A',
+      onBlockTime: 'N/A',
       isOnGround: false,
       isEngOn: false,
       landingVS: 0,
       landingG: 0.0,
-      flightStatus: '',
+      flightStatus: 'N/A',
     ),
   );
   FlightStatus selectedValue = FlightStatus.INI;
@@ -112,15 +126,8 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
   }
 
   bool startConnector() {
-    late String command;
-    if (widget.connectionType == 0) {
-      command = 'UIPCDemo64.exe';
-    }
-    if (widget.connectionType == 1) {
-      command = 'UIPCDemo32.exe';
-    }
     try {
-      Process.run(command, [])
+      Process.run('UIPCDemo32.exe', [])
           .then((process) {
             if (kDebugMode) {
               print('Command executed successfully');
@@ -138,15 +145,8 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
   }
 
   bool stopConnector() {
-    late String command;
-    if (widget.connectionType == 0) {
-      command = 'taskkill /F /IM UIPCDemo64.exe';
-    }
-    if (widget.connectionType == 1) {
-      command = 'taskkill /F /IM UIPCDemo32.exe';
-    }
     try {
-      Process.run('cmd', ['/c', command])
+      Process.run('cmd', ['/c', 'taskkill /F /IM UIPCDemo32.exe'])
           .then((process) {
             if (kDebugMode) {
               print('Command executed successfully');
@@ -197,6 +197,9 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
     if (FlightStatusUpdate.currentStatus == FlightStatus.ARR) {
       FlightDataDisplay.webUploadDelay = 100;
     }
+    if (FlightStatusUpdate.currentStatus == FlightStatus.PSD) {
+      FlightDataDisplay.webUploadDelay = 300;
+    }
   }
 
   void startTimer() {
@@ -205,34 +208,43 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (!_isFetchingData) {
         _isFetchingData = true;
-        FlightSimComm()
-            .getFlightData(context, onError: stopTimer, onRetry: startTimer)
-            .then((data) {
-              if (data != null) {
-                _flightDataNotifier.value = FlightData(
-                  airspeed: data['airspeed'] ?? 0,
-                  groundSpeed: data['groundSpeed'] ?? 0,
-                  altCalibrated: data['altCalibrated'] ?? 0,
-                  radioAltitude: data['radioAltitude'] ?? 0,
-                  gpsLat: data['gpsLat'] ?? 0.0,
-                  gpsLon: data['gpsLon'] ?? 0.0,
-                  totalFuel: data['totalFuel'] ?? 0,
-                  trueHeading: data['trueHeading'] ?? 0,
-                  zuluYear: data['zuluYear'] ?? 0,
-                  zuluMonth: data['zuluMonth'] ?? 0,
-                  zuluDay: data['zuluDay'] ?? 0,
-                  zuluHour: data['zuluHour'] ?? 0,
-                  zuluMinute: data['zuluMinute'] ?? 0,
-                  zuluSecond: data['zuluSecond'] ?? 0,
-                  isOnGround: data['isOnGround'] ?? false,
-                  isEngOn: data['isEngOn'] ?? false,
-                  landingVS: data['landingVS'] ?? 0,
-                  landingG: data['landingG'] ?? 0.0,
-                  flightStatus: data['flightStatus'] ?? '',
-                );
-              }
-              _isFetchingData = false;
-            });
+        FlightSimComm(
+          vaUrl: widget.vaUrl,
+          apiKey: widget.apiKey,
+          pirepID: widget.pirepID,
+        ).getFlightData(context, onError: stopTimer, onRetry: startTimer).then((
+          data,
+        ) {
+          if (data != null) {
+            _flightDataNotifier.value = FlightData(
+              airspeed: data['airspeed'] ?? 0,
+              groundSpeed: data['groundSpeed'] ?? 0,
+              altCalibrated: data['altCalibrated'] ?? 0,
+              radioAltitude: data['radioAltitude'] ?? 0,
+              gpsLat: data['gpsLat'] ?? 0.0,
+              gpsLon: data['gpsLon'] ?? 0.0,
+              flightDistance: data['flightDistance'] ?? 0.0,
+              totalFuel: data['totalFuel'] ?? 0,
+              fuelUsed: data['fuelUsed'] ?? 0,
+              trueHeading: data['trueHeading'] ?? 0,
+              zuluYear: data['zuluYear'] ?? 0,
+              zuluMonth: data['zuluMonth'] ?? 0,
+              zuluDay: data['zuluDay'] ?? 0,
+              zuluHour: data['zuluHour'] ?? 0,
+              zuluMinute: data['zuluMinute'] ?? 0,
+              zuluSecond: data['zuluSecond'] ?? 0,
+              flightTime: data['flightTime'] ?? 0,
+              offBlockTime: data['offBlockTime'] ?? 'N/A',
+              onBlockTime: data['onBlockTime'] ?? 'N/A',
+              isOnGround: data['isOnGround'] ?? false,
+              isEngOn: data['isEngOn'] ?? false,
+              landingVS: data['landingVS'] ?? 0,
+              landingG: data['landingG'] ?? 0.0,
+              flightStatus: data['flightStatus'] ?? 'N/A',
+            );
+          }
+          _isFetchingData = false;
+        });
         if (FlightDataDisplay.webUploadDelay > 1) {
           FlightDataDisplay.webUploadDelay =
               FlightDataDisplay.webUploadDelay - 1;
@@ -266,6 +278,25 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
                   showConnectionError(context, result, startTimer);
                 }
               });
+          webComm
+              .updatePirep(
+                widget.vaUrl,
+                widget.apiKey,
+                widget.pirepID,
+                _flightDataNotifier.value.flightDistance,
+                _flightDataNotifier.value.fuelUsed,
+                _flightDataNotifier.value.flightTime,
+                context,
+              )
+              .then((result) {
+                if (result is Exception) {
+                  if (kDebugMode) {
+                    print('Error updating pireps: $result');
+                  }
+                  stopTimer();
+                  showConnectionError(context, result, startTimer);
+                }
+              });
         }
       }
     });
@@ -275,6 +306,74 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
     _timer?.cancel();
     _timer = null;
     stopConnector();
+  }
+
+  Future fileCompletePirep() async {
+    if (FlightStatusUpdate.offBlockTimeValid &&
+        FlightStatusUpdate.onBlockTimeValid) {
+      await WebComm().fileCompletePirepWithBlockTime(
+        widget.vaUrl,
+        widget.apiKey,
+        widget.pirepID,
+        _flightDataNotifier.value.flightTime,
+        _flightDataNotifier.value.fuelUsed,
+        _flightDataNotifier.value.flightDistance,
+        _flightDataNotifier.value.offBlockTime,
+        _flightDataNotifier.value.onBlockTime,
+        _flightDataNotifier.value.landingVS,
+      );
+    } else {
+      await WebComm().fileCompletePirep(
+        widget.vaUrl,
+        widget.apiKey,
+        widget.pirepID,
+        _flightDataNotifier.value.flightTime,
+        _flightDataNotifier.value.fuelUsed,
+        _flightDataNotifier.value.flightDistance,
+        _flightDataNotifier.value.landingVS,
+      );
+    }
+  }
+
+  void showQuitFlightDialog(BuildContext context) async {
+    await showDialog<String>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('Are you sure to quit?'),
+        content: const Text(
+          'Choose "Quit only" to quit without filing a completed pirep. Choose "Quit & file" to quit and file the completed pirep.',
+        ),
+        actions: [
+          Button(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          Button(
+            child: const Text('Quit only'),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                FluentPageRoute(builder: (context) => MyApp()),
+                (route) => false,
+              );
+            },
+          ),
+          FilledButton(
+            child: const Text('Quit & file'),
+            onPressed: () {
+              fileCompletePirep();
+              Navigator.pushAndRemoveUntil(
+                context,
+                FluentPageRoute(builder: (context) => MyApp()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   //
@@ -306,11 +405,14 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
           children: [
             ComboBox(
               value: selectedValue,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue = value ?? FlightStatus.BST;
-                });
-              },
+              onChanged: statusAutoUpdate
+                  ? null
+                  : (value) {
+                      setState(() {
+                        selectedValue =
+                            value as FlightStatus? ?? FlightStatus.BST;
+                      });
+                    },
               items: [
                 ComboBoxItem(value: FlightStatus.BST, child: Text('Boarding')),
                 ComboBoxItem(value: FlightStatus.TXI, child: Text('Taxi')),
@@ -328,14 +430,35 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
               ],
             ),
             Button(
+              onPressed: statusAutoUpdate
+                  ? null
+                  : () {
+                      setState(() {
+                        FlightStatusUpdate.currentStatus = selectedValue;
+                        WebComm().updateStatus(
+                          widget.vaUrl,
+                          widget.apiKey,
+                          widget.pirepID,
+                          selectedValue.toString().substring(
+                            selectedValue.toString().length - 3,
+                          ),
+                        );
+                        resetWebUploadDelay();
+                      });
+                    },
               child: Text('Update'),
-              onPressed: () {
-                setState(() {
-                  FlightStatusUpdate.currentStatus = selectedValue;
-                });
-              },
             ),
           ],
+        ),
+        Button(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 7,
+            children: [Text('quit'), Icon(FluentIcons.clear)],
+          ),
+          onPressed: () {
+            showQuitFlightDialog(context);
+          },
         ),
       ],
     );
@@ -354,7 +477,7 @@ class FlightDataText extends StatelessWidget {
         return Column(
           children: [
             Text(
-              'Airspeed: ${flightData.airspeed} kts \nGround speed: ${flightData.groundSpeed} kts \nCalibrated altitude: ${flightData.altCalibrated} ft \nRadio altitude: ${flightData.radioAltitude} ft \nLat: ${flightData.gpsLat}° \nLon: ${flightData.gpsLon}° \nTotal fuel: ${flightData.totalFuel} lbs \nTrue heading: ${flightData.trueHeading}° \nSim zulu time: ${flightData.zuluYear}-${flightData.zuluMonth}-${flightData.zuluDay}   ${flightData.zuluHour}:${flightData.zuluMinute}:${flightData.zuluSecond} \nOn ground: ${flightData.isOnGround == true ? 'True' : 'False'} \nEngine running: ${flightData.isEngOn == true ? 'True' : 'False'}\nLandingVS: ${flightData.landingVS} fpm\nLandingG: ${flightData.landingG} g\n\nflight status: ${flightData.flightStatus}\nWeb upload delay: ${FlightDataDisplay.webUploadDelay}',
+              'Airspeed: ${flightData.airspeed} kts \nGround speed: ${flightData.groundSpeed} kts \nCalibrated altitude: ${flightData.altCalibrated} ft \nRadio altitude: ${flightData.radioAltitude} ft \nLat: ${flightData.gpsLat}° \nLon: ${flightData.gpsLon}° \nFlight distance: ${flightData.flightDistance} nm\nTotal fuel: ${flightData.totalFuel} lbs \nFuel used: ${flightData.fuelUsed} lbs\nTrue heading: ${flightData.trueHeading}° \nSim zulu time: ${flightData.zuluYear}-${flightData.zuluMonth}-${flightData.zuluDay}   ${flightData.zuluHour}:${flightData.zuluMinute}:${flightData.zuluSecond} \nFlight time: ${flightData.flightTime} mins \nOff block time: ${flightData.offBlockTime} \nOn block time: ${flightData.onBlockTime} \nOn ground: ${flightData.isOnGround == true ? 'True' : 'False'} \nEngine running: ${flightData.isEngOn == true ? 'True' : 'False'}\nLandingVS: ${flightData.landingVS} fpm\nLandingG: ${flightData.landingG} g\n\nflight status: ${flightData.flightStatus}\nWeb upload delay: ${FlightDataDisplay.webUploadDelay}',
               style: const TextStyle(fontSize: 15, height: 1.7),
             ),
           ],
