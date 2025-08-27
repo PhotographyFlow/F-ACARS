@@ -174,10 +174,10 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
       FlightDataDisplay.webUploadDelay = 100;
     }
     if (FlightStatusUpdate.currentStatus == FlightStatus.TXI) {
-      FlightDataDisplay.webUploadDelay = 2;
+      FlightDataDisplay.webUploadDelay = 4;
     }
     if (FlightStatusUpdate.currentStatus == FlightStatus.TOF) {
-      FlightDataDisplay.webUploadDelay = 2;
+      FlightDataDisplay.webUploadDelay = 4;
     }
     if (FlightStatusUpdate.currentStatus == FlightStatus.ICL) {
       FlightDataDisplay.webUploadDelay = 5;
@@ -192,7 +192,7 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
       FlightDataDisplay.webUploadDelay = 5;
     }
     if (FlightStatusUpdate.currentStatus == FlightStatus.LAN) {
-      FlightDataDisplay.webUploadDelay = 2;
+      FlightDataDisplay.webUploadDelay = 4;
     }
     if (FlightStatusUpdate.currentStatus == FlightStatus.ARR) {
       FlightDataDisplay.webUploadDelay = 100;

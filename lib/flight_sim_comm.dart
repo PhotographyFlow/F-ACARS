@@ -389,7 +389,7 @@ class LandingDataRecorder {
   static int landingVS = 0;
   static double landingG = 0.0;
 
-  static void startTimer(context) {
+  static void startTimer(BuildContext context) {
     isStarted = true;
     isTryToStop = false;
     if (isGettingData) {
