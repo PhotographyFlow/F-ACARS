@@ -71,6 +71,7 @@ class _HomePageState extends State<HomePage> {
   final apiKeyController = TextEditingController();
   final vaUrlController = TextEditingController();
   int weightUnit = 0; // 0=lbs, 1=kg
+  int connectionType = 0; // 0=MS,1=XPlane
   bool _isLoading = false;
 
   String? airlineIcao;
@@ -246,6 +247,7 @@ class _HomePageState extends State<HomePage> {
       vaUrlController.text = jsonSettings['vaUrl'] ?? '';
       apiKeyController.text = jsonSettings['apiKey'] ?? '';
       weightUnit = jsonSettings['weightUnit'] ?? 0;
+      connectionType = jsonSettings['connectionType'] ?? 0;
       setState(() {});
 
       if (kDebugMode) {
@@ -275,6 +277,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //
+  //
+  //
+  //
+  //
   //
   //
   //
@@ -385,6 +392,7 @@ class _HomePageState extends State<HomePage> {
                                 plannedDistance: plannedDistance,
                                 plannedFlightTime: plannedFlightTime,
                                 buildNumber: widget.buildNumber,
+                                connectionType: connectionType,
                               );
                             },
                           ),

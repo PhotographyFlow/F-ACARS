@@ -23,6 +23,7 @@ class FlightLoadingPage extends StatelessWidget {
 
   final int weightUnit;
   final int buildNumber;
+  final int connectionType;
 
   const FlightLoadingPage({
     super.key,
@@ -44,6 +45,7 @@ class FlightLoadingPage extends StatelessWidget {
 
     required this.weightUnit,
     required this.buildNumber,
+    required this.connectionType,
   });
 
   @override
@@ -106,6 +108,7 @@ class FlightLoadingPage extends StatelessWidget {
                   vaUrl: vaUrlController.text,
                   apiKey: apiKeyController.text,
                   buildNumber: buildNumber,
+                  connectionType: connectionType,
                 ),
               ),
               (route) => false,

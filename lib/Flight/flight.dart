@@ -17,6 +17,7 @@ class FlightPage extends StatelessWidget {
   final String vaUrl;
 
   final int buildNumber;
+  final int connectionType;
 
   const FlightPage({
     super.key,
@@ -34,6 +35,7 @@ class FlightPage extends StatelessWidget {
     required this.vaUrl,
 
     required this.buildNumber,
+    required this.connectionType,
   });
 
   @override
@@ -276,6 +278,7 @@ class FlightPage extends StatelessWidget {
                           vaUrl: vaUrl,
                           apiKey: apiKey,
                           pirepID: flightID,
+                          connectionType: connectionType,
                         ),
                       ],
                     ),

@@ -65,12 +65,14 @@ class FlightDataDisplay extends StatefulWidget {
   final String apiKey;
   final String pirepID;
   static int webUploadDelay = 1;
+  final int connectionType;
 
   const FlightDataDisplay({
     super.key,
     required this.vaUrl,
     required this.apiKey,
     required this.pirepID,
+    required this.connectionType,
   });
 
   @override
@@ -212,6 +214,7 @@ class FlightDataDisplayState extends State<FlightDataDisplay> {
           vaUrl: widget.vaUrl,
           apiKey: widget.apiKey,
           pirepID: widget.pirepID,
+          connectionType: widget.connectionType,
         ).getFlightData(context, onError: stopTimer, onRetry: startTimer).then((
           data,
         ) {

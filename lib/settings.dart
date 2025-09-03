@@ -28,6 +28,7 @@ class SettingsPageState extends State<SettingsPage> {
   AnimationController? _animationController;
   Future? _testFuture;
   int weightUnit = 0; //0=lbs, 1=kg
+  int connectionType = 0; //0=MS, 1=XPlane
 
   @override
   void initState() {
@@ -65,6 +66,7 @@ class SettingsPageState extends State<SettingsPage> {
       final localeCode = jsonSettings['locale'];
       setState(() {
         weightUnit = jsonSettings['weightUnit'] ?? 0;
+        connectionType = jsonSettings['connectionType'] ?? 0;
       });
       if (localeCode != null) {
         _selectedLocale = Locale(localeCode);
@@ -290,6 +292,39 @@ class SettingsPageState extends State<SettingsPage> {
               items: [
                 ComboBoxItem(value: 0, child: Text('lbs')),
                 ComboBoxItem(value: 1, child: Text('kg')),
+              ],
+            ),
+
+            //select connection simulator
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Text('Connection type'),
+                SizedBox(width: 7),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.5),
+                  child: Tooltip(
+                    message: 'Horizontal ToolTip',
+                    displayHorizontally: true,
+                    useMousePosition: false,
+                    style: const TooltipThemeData(preferBelow: true),
+                    child: const Icon((FluentIcons.info), size: 11),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            ComboBox(
+              value: connectionType,
+              onChanged: (int? value) {
+                setState(() {
+                  connectionType = value!;
+                  _saveSettings('connectionType', value);
+                });
+              },
+              items: [
+                ComboBoxItem(value: 0, child: Text('FSUIPC')),
+                ComboBoxItem(value: 1, child: Text('XPUIPC')),
               ],
             ),
 

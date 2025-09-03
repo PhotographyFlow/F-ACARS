@@ -40,6 +40,7 @@ class _MyAppState extends State<MyApp> {
   Locale? _selectedLocale;
   final apiKeyController = TextEditingController();
   final _storage = FlutterSecureStorage();
+  bool _initialized = false;
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -50,13 +51,16 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  WindowEffect effect = WindowEffect.transparent;
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
     _loadLang();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+      if (kDebugMode) {
+        print('rebuild!');
+      }
+    });
   }
 
   Future<void> _loadLang() async {
@@ -74,13 +78,9 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     try {
       _deviceData = _readWindowsDeviceInfo(await deviceInfoPlugin.windowsInfo);
-      if (kDebugMode) {
-        print(_deviceData['buildNumber']);
-      }
+      _initialized = true;
     } on Exception {
-      _deviceData = <String, dynamic>{
-        'Error:': 'Failed to get platform version.',
-      };
+      _deviceData["buildNumber"] = 0;
     }
     if (!mounted) return;
     setState(() {});
@@ -90,38 +90,54 @@ class _MyAppState extends State<MyApp> {
     Window.setEffect(effect: effect, dark: dark);
   }
 
+  WindowEffect effect = WindowEffect.disabled;
   @override
   Widget build(BuildContext context) {
-    // Set mica effect if Windows 11
-    if (_deviceData['buildNumber'] >= 22000) {
-      setEffect(WindowEffect.mica, true, context);
-    }
+    return FutureBuilder(
+      future: (!_initialized) ? initPlatformState() : null,
+      builder: (context, snapshot) {
+        if (kDebugMode) {
+          print('FutureBuilder snapshot: $snapshot');
+        }
+        if (_initialized) {
+          // Set mica effect if Windows 11
+          if (_deviceData['buildNumber'] >= 22000) {
+            setEffect(WindowEffect.mica, true, context);
+            effect = WindowEffect.mica;
+          } else {
+            effect = WindowEffect.disabled;
+          }
 
-    return FluentApp(
-      locale: _selectedLocale,
-      localizationsDelegates: [
-        GlobalWidgetsLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        AppLocalizations.delegate,
-      ],
-      supportedLocales: L10n.all,
-      title: 'F-ACARS',
+          return FluentApp(
+            locale: _selectedLocale,
+            localizationsDelegates: [
+              GlobalWidgetsLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              AppLocalizations.delegate,
+            ],
+            supportedLocales: L10n.all,
+            title: 'F-ACARS',
 
-      theme: FluentThemeData(
-        brightness: Brightness.dark,
-        accentColor: Colors.blue,
+            theme: FluentThemeData(
+              brightness: Brightness.dark,
+              accentColor: Colors.blue,
 
-        // Let navigation be transparent if win11 to work with mica effect:
-        navigationPaneTheme: _deviceData['buildNumber'] >= 22000
-            ? NavigationPaneThemeData(backgroundColor: Colors.transparent)
-            : NavigationPaneThemeData(backgroundColor: null),
-      ),
+              // Let navigation be transparent if win11 to work with mica effect:
+              navigationPaneTheme: effect == WindowEffect.mica
+                  ? NavigationPaneThemeData(backgroundColor: Colors.transparent)
+                  : NavigationPaneThemeData(backgroundColor: null),
+            ),
 
-      home: Navigation(
-        onLocaleChanged: onLocaleChanged,
-        buildNumber: _deviceData['buildNumber'],
-      ),
+            home: Navigation(
+              onLocaleChanged: onLocaleChanged,
+              buildNumber: _deviceData['buildNumber'],
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }

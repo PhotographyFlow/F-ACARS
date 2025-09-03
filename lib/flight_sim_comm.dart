@@ -13,6 +13,7 @@ class FlightSimComm {
   final String pirepID;
   final String flightSimUrl = 'http://localhost:8000';
   final recorder = LandingDataRecorder();
+  final int connectionType;
   static bool isInitFuelSaved = false;
   static bool isInitLatLonSaved = false;
   static bool isInitTimeSaved = false;
@@ -28,6 +29,7 @@ class FlightSimComm {
     required this.vaUrl,
     required this.apiKey,
     required this.pirepID,
+    required this.connectionType,
   });
 
   double deg2rad(double deg) {
@@ -52,137 +54,271 @@ class FlightSimComm {
     VoidCallback? onRetry,
   }) async {
     try {
-      final response = await post(
-        Uri.parse('$flightSimUrl/api/uipc'),
-        body: jsonEncode({
-          "requestId": "1",
-          "apiVersion": "1.0",
-          "dataQueries": [
-            {
-              "name": "AIRSPEED INDICATED (knots multed by 128)",
-              "offset": "  0x02BC",
-              "size": 4,
-              "targetType": "int32",
-            },
-            {
-              "name": "GPS GROUND SPEED (m per s)",
-              "offset": "0x6030",
-              "size": 8,
-              "targetType": "float64",
-            },
-            {
-              "name": "INDICATED ALTITUDE CALIBRATED SEA LEVEL(m)",
-              "offset": "0x34B0",
-              "size": 8,
-              "targetType": "float64",
-            },
-            {
-              "name": " Radio altitude (m)",
-              "offset": "0x31E4",
-              "size": 4,
-              "targetType": "int32",
-            },
-            {
-              "name": "GPS POSITION LAT (deg)",
-              "offset": "0x6010",
-              "size": 8,
-              "targetType": "float64",
-            },
-            {
-              "name": "GPS POSITION LON (deg)",
-              "offset": "0x6018",
-              "size": 8,
-              "targetType": "float64",
-            },
-            {
-              "name": " total fuel quantity weight in pounds",
-              "offset": "0x126C",
-              "size": 4,
-              "targetType": "int32",
-            },
-            {
-              "name": "TRUE heading",
-              "offset": "0x0580",
-              "size": 4,
-              "targetType": "int32",
-            },
-            {
-              "name": "Zulu year",
-              "offset": "0x0240",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Zulu month",
-              "offset": "0x0242",
-              "size": 1,
-              "targetType": "int8",
-            },
-            {
-              "name": "Zulu day",
-              "offset": "0x023D",
-              "size": 1,
-              "targetType": "int8",
-            },
-            {
-              "name": "Zulu hour",
-              "offset": "0x023B",
-              "size": 1,
-              "targetType": "int8",
-            },
-            {
-              "name": "Zulu minute",
-              "offset": "0x023C",
-              "size": 1,
-              "targetType": "int8",
-            },
-            {
-              "name": "Zulu second",
-              "offset": "0x023A",
-              "size": 1,
-              "targetType": "int8",
-            },
-            {
-              "name": "Aircraft on ground flag",
-              "offset": "0x0366",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Eng1 on flag",
-              "offset": "0x0894",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Eng2 on flag",
-              "offset": "0x092C",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Eng3 on flag",
-              "offset": "0x09C4",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Eng4 on flag",
-              "offset": "0x0A5C",
-              "size": 2,
-              "targetType": "int16",
-            },
-            {
-              "name": "Is paused flag",
-              "offset": "0x0264",
-              "size": 2,
-              "targetType": "int16",
-            },
-          ],
-        }),
-      );
-      if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
+      Response? response;
+      if (connectionType == 0) {
+        response = await post(
+          Uri.parse('$flightSimUrl/api/uipc'),
+          body: jsonEncode({
+            "requestId": "1",
+            "apiVersion": "1.0",
+            "dataQueries": [
+              {
+                "name": "AIRSPEED INDICATED (knots multed by 128)",
+                "offset": "  0x02BC",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "GPS GROUND SPEED (m per s)",
+                "offset": "0x6030",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "INDICATED ALTITUDE CALIBRATED SEA LEVEL(m)",
+                "offset": "0x34B0",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "Radio altitude (m)",
+                "offset": "0x31E4",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "GPS POSITION LAT (deg)",
+                "offset": "0x6010",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "GPS POSITION LON (deg)",
+                "offset": "0x6018",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "total fuel quantity weight in pounds",
+                "offset": "0x126C",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "TRUE heading",
+                "offset": "0x0580",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "Zulu year",
+                "offset": "0x0240",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Zulu month",
+                "offset": "0x0242",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu day",
+                "offset": "0x023D",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu hour",
+                "offset": "0x023B",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu minute",
+                "offset": "0x023C",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu second",
+                "offset": "0x023A",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Aircraft on ground flag",
+                "offset": "0x0366",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng1 on flag",
+                "offset": "0x0894",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng2 on flag",
+                "offset": "0x092C",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng3 on flag",
+                "offset": "0x09C4",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng4 on flag",
+                "offset": "0x0A5C",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Is paused flag",
+                "offset": "0x0264",
+                "size": 2,
+                "targetType": "int16",
+              },
+            ],
+          }),
+        );
+      }
+      if (connectionType == 1) {
+        response = await post(
+          Uri.parse('$flightSimUrl/api/uipc'),
+          body: jsonEncode({
+            "requestId": "1",
+            "apiVersion": "1.0",
+            "dataQueries": [
+              {
+                "name": "AIRSPEED INDICATED (knots multed by 128)",
+                "offset": "  0x02BC",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "GPS GROUND SPEED (m per s)",
+                "offset": "0x6030",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "INDICATED ALTITUDE CALIBRATED SEA LEVEL(m)",
+                "offset": "0x34B0",
+                "size": 8,
+                "targetType": "float64",
+              },
+              {
+                "name": "Radio altitude (m)",
+                "offset": "0x31E4",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "GPS POSITION LAT (deg) XUIPC",
+                "offset": "0x0560",
+                "size": 8,
+                "targetType": "xplat",
+              },
+              {
+                "name": "GPS POSITION LON (deg) XUIPC",
+                "offset": "0x0568",
+                "size": 8,
+                "targetType": "xplon",
+              },
+              {
+                "name": "total fuel quantity weight in pounds",
+                "offset": "0x126C",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "TRUE heading",
+                "offset": "0x0580",
+                "size": 4,
+                "targetType": "int32",
+              },
+              {
+                "name": "Zulu year",
+                "offset": "0x0240",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Zulu month",
+                "offset": "0x0242",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu day",
+                "offset": "0x023D",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu hour",
+                "offset": "0x023B",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu minute",
+                "offset": "0x023C",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Zulu second",
+                "offset": "0x023A",
+                "size": 1,
+                "targetType": "int8",
+              },
+              {
+                "name": "Aircraft on ground flag",
+                "offset": "0x0366",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng1 on flag",
+                "offset": "0x0894",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng2 on flag",
+                "offset": "0x092C",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng3 on flag",
+                "offset": "0x09C4",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Eng4 on flag",
+                "offset": "0x0A5C",
+                "size": 2,
+                "targetType": "int16",
+              },
+              {
+                "name": "Is paused flag",
+                "offset": "0x0264",
+                "size": 2,
+                "targetType": "int16",
+              },
+            ],
+          }),
+        );
+      }
+      if (response?.statusCode == 200) {
+        final responseBody = jsonDecode(response!.body);
         final responseData = responseBody['dataResults'];
         final String isSucceeded = responseBody['status'] ?? 'failed';
         if (isSucceeded == 'success') {
