@@ -22,9 +22,8 @@ class FlightLoadingPage extends StatelessWidget {
   final int plannedFlightTime;
 
   final int weightUnit;
-  final int connectionType;
-
   final int buildNumber;
+  final int connectionType;
 
   const FlightLoadingPage({
     super.key,
@@ -45,9 +44,8 @@ class FlightLoadingPage extends StatelessWidget {
     required this.plannedFlightTime,
 
     required this.weightUnit,
-    required this.connectionType,
-
     required this.buildNumber,
+    required this.connectionType,
   });
 
   @override
@@ -75,9 +73,24 @@ class FlightLoadingPage extends StatelessWidget {
           fares,
         )
         .then((result) {
+          FlightSimComm.isInitFuelSaved = false;
+          FlightSimComm.initFuel = 0;
+          FlightSimComm.isInitLatLonSaved = false;
+          FlightSimComm.initLat = 0;
+          FlightSimComm.initLon = 0;
+          FlightSimComm.isInitTimeSaved = false;
+          FlightSimComm.initDay = 0;
+          FlightSimComm.initHour = 0;
+          FlightSimComm.initMinute = 0;
           FlightStatusUpdate.currentStatus = FlightStatus.INI;
+          LandingDataRecorder.landingVS = 0;
+          LandingDataRecorder.landingG = 0;
+          FlightStatusUpdate.offBlockTimeValid = false;
+          FlightStatusUpdate.onBlockTimeValid = false;
+          FlightStatusUpdate.offBlockTime = 'N/A';
+          FlightStatusUpdate.onBlockTime = 'N/A';
           String flightID = result?['id'] ?? 'null';
-          if (flightID != 'null') {
+          if (flightID != 'null' && context.mounted) {
             Navigator.pushAndRemoveUntil(
               context,
               FluentPageRoute(
@@ -90,12 +103,12 @@ class FlightLoadingPage extends StatelessWidget {
                   arrAirport: arrAirport,
                   blockFuel: blockFuel,
                   weightUnit: weightUnit,
-                  connectionType: connectionType,
                   route: route,
                   fares: fares,
                   vaUrl: vaUrlController.text,
                   apiKey: apiKeyController.text,
                   buildNumber: buildNumber,
+                  connectionType: connectionType,
                 ),
               ),
               (route) => false,

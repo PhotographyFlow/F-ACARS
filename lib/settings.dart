@@ -28,7 +28,7 @@ class SettingsPageState extends State<SettingsPage> {
   AnimationController? _animationController;
   Future? _testFuture;
   int weightUnit = 0; //0=lbs, 1=kg
-  int connectionType = 0; //0=x64, 1=x32
+  int connectionType = 0; //0=MS, 1=XPlane
 
   @override
   void initState() {
@@ -294,27 +294,26 @@ class SettingsPageState extends State<SettingsPage> {
                 ComboBoxItem(value: 1, child: Text('kg')),
               ],
             ),
-            SizedBox(height: 20),
 
-            //select weight unit
+            //select connection simulator
+            SizedBox(height: 20),
             Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(AppLocalizations.of(context)!.connectionType),
-                Tooltip(
-                  message: AppLocalizations.of(context)!.connectionTypeTip,
-                  displayHorizontally: true,
-                  useMousePosition: false,
-                  style: const TooltipThemeData(preferBelow: true),
-                  child: const Icon(FluentIcons.info, size: 12.0),
+                Text('Connection type'),
+                SizedBox(width: 7),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.5),
+                  child: Tooltip(
+                    message: 'Horizontal ToolTip',
+                    displayHorizontally: true,
+                    useMousePosition: false,
+                    style: const TooltipThemeData(preferBelow: true),
+                    child: const Icon((FluentIcons.info), size: 11),
+                  ),
                 ),
               ],
             ),
             SizedBox(height: 10),
-
-            //select fsuipc connection type combo box
             ComboBox(
               value: connectionType,
               onChanged: (int? value) {
@@ -324,8 +323,8 @@ class SettingsPageState extends State<SettingsPage> {
                 });
               },
               items: [
-                ComboBoxItem(value: 0, child: Text('x64')),
-                ComboBoxItem(value: 1, child: Text('x32')),
+                ComboBoxItem(value: 0, child: Text('FSUIPC')),
+                ComboBoxItem(value: 1, child: Text('XPUIPC')),
               ],
             ),
 

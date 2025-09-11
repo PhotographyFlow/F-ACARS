@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   final apiKeyController = TextEditingController();
   final vaUrlController = TextEditingController();
   int weightUnit = 0; // 0=lbs, 1=kg
-  int connectionType = 0; // 0=x64, 1=x32
+  int connectionType = 0; // 0=MS,1=XPlane
   bool _isLoading = false;
 
   String? airlineIcao;
@@ -282,6 +282,11 @@ class _HomePageState extends State<HomePage> {
   //
   //
   //
+  //
+  //
+  //
+  //
+  //
   // UI
   @override
   Widget build(BuildContext context) {
@@ -383,11 +388,11 @@ class _HomePageState extends State<HomePage> {
                                 route: routeController.text,
                                 fares: fares,
                                 weightUnit: weightUnit,
-                                connectionType: connectionType,
                                 bidID: flightID ?? '',
                                 plannedDistance: plannedDistance,
                                 plannedFlightTime: plannedFlightTime,
                                 buildNumber: widget.buildNumber,
+                                connectionType: connectionType,
                               );
                             },
                           ),
@@ -703,10 +708,8 @@ class _HomePageState extends State<HomePage> {
                             enabled: false,
                             placeholder: AppLocalizations.of(context)!.noFares,
                             style: TextStyle(
-                              fontFamily: 'Arial',
                               fontSize: 24.0,
                               color: Color(0xFF5178BE),
-                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ),

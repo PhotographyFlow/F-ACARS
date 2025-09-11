@@ -1,4 +1,3 @@
-import 'package:f_acars/main.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:f_acars/l10n/app_localizations.dart';
 import 'package:f_acars/Flight/display_flight_data.dart';
@@ -12,13 +11,13 @@ class FlightPage extends StatelessWidget {
   final String arrAirport;
   final int blockFuel;
   final int weightUnit;
-  final int connectionType;
   final String route;
   final List<dynamic> fares;
   final String apiKey;
   final String vaUrl;
 
   final int buildNumber;
+  final int connectionType;
 
   const FlightPage({
     super.key,
@@ -30,13 +29,13 @@ class FlightPage extends StatelessWidget {
     required this.arrAirport,
     required this.blockFuel,
     required this.weightUnit,
-    required this.connectionType,
     required this.route,
     required this.fares,
     required this.apiKey,
     required this.vaUrl,
 
     required this.buildNumber,
+    required this.connectionType,
   });
 
   @override
@@ -60,30 +59,6 @@ class FlightPage extends StatelessWidget {
             style: FluentTheme.of(context).typography.titleLarge,
           ),
         ),
-        bottomBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10.0),
-              child: Button(
-                child: Row(
-                  spacing: 7,
-                  children: [
-                    Text(AppLocalizations.of(context)!.quit),
-                    Icon(FluentIcons.clear),
-                  ],
-                ),
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    FluentPageRoute(builder: (context) => MyApp()),
-                    (route) => false,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
         children: [
           SizedBox(
             child: Row(
@@ -96,17 +71,7 @@ class FlightPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(right: 30),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            right: BorderSide(
-                              color: FluentTheme.of(
-                                context,
-                              ).resources.controlStrokeColorSecondary,
-                              width: 1,
-                            ),
-                          ),
-                        ),
+                        padding: EdgeInsets.only(right: 10),
                         child: Column(
                           spacing: 20,
                           children: [
@@ -295,15 +260,28 @@ class FlightPage extends StatelessWidget {
                 //
                 //display flight data
                 Expanded(
-                  child: Column(
-                    children: [
-                      FlightDataDisplay(
-                        vaUrl: vaUrl,
-                        apiKey: apiKey,
-                        pirepID: flightID,
-                        connectionType: connectionType,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 30),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                          color: FluentTheme.of(
+                            context,
+                          ).resources.controlStrokeColorSecondary,
+                          width: 1,
+                        ),
                       ),
-                    ],
+                    ),
+                    child: Column(
+                      children: [
+                        FlightDataDisplay(
+                          vaUrl: vaUrl,
+                          apiKey: apiKey,
+                          pirepID: flightID,
+                          connectionType: connectionType,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
