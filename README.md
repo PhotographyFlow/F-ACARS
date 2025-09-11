@@ -25,7 +25,7 @@ A simple, free ACARS for phpVMS, powered by <a href="https://flutter.dev">Flutte
   -  FSX
   -  P3D
   -  MSFS
-  -  ~~(X-Plane)~~ currtently not supported, w.i.p. 
+  -  ~~X-Plane~~ currtently not supported, w.i.p. 
 
 -  Retrieve bids and automatically calculate the amount of fares based on load factor and variance
 
