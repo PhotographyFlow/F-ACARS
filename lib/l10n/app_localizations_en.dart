@@ -69,7 +69,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectionType => 'Connection Type';
 
   @override
-  String get connectionTypeTip => 'x64: For 64-bit simulators (e.g. P3Dv4+, MSFS)\nx32: For 32-bit simulators (e.g. P3Dv1-3, FSX)\nPlease make sure fsuipc is installed';
+  String get connectionTypeTip => 'FSUIPC: For FSX,P3D,MSFS2020/2024\nXPUIPC: For X-Plane 11/12\nPlease make sure FSUIPC/XPUIPC is installed';
 
   @override
   String get weightUnit => 'Weight Unit';

@@ -101,7 +101,7 @@
     "description": "Connection type setting"
   },
 
-  "connectionTypeTip": "x64: 适用于64位模拟器 (如 P3Dv4+, MSFS)\nx32: 适用于32位模拟器 (如 P3Dv1-3, FSX)\n请确保fsuipc已安装",
+  "connectionTypeTip": "FSUIPC: 适用于 FSX,P3D,MSFS2020/2024\nXPUIPC: 适用于 X-Plane 11/12\n请确保 FSUIPC/XPUIPC 已安装",
   "@connectionTypeTip": {
     "description": "Connection type setting toop tip"
   },
@@ -151,7 +151,7 @@
     "description": "Aircraft type label"
   },
 
-  "aircraftIcaoCode": "飞机ICAO代码",
+  "aircraftIcaoCode": "飞机ICAO",
   "@aircraftIcaoCode": {
     "description": "Aircraft ICAO code label"
   },

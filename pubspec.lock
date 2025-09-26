@@ -105,6 +105,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.12.0"
+  fluentui_system_icons:
+    dependency: "direct main"
+    description:
+      name: fluentui_system_icons
+      sha256: "1592ae32dae75fb66741ab2c0607bc6554ef086f1c457e27ef937fb4901d33da"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.273"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -233,10 +241,10 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "8dcda04c3fc16c14f48a7bb586d4be1f0d1572731b6d81d51772ef47c02081e0"
+      sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "11.0.1"
+    version: "11.0.2"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:

@@ -218,7 +218,7 @@ abstract class AppLocalizations {
   /// Connection type setting toop tip
   ///
   /// In en, this message translates to:
-  /// **'x64: For 64-bit simulators (e.g. P3Dv4+, MSFS)\nx32: For 32-bit simulators (e.g. P3Dv1-3, FSX)\nPlease make sure fsuipc is installed'**
+  /// **'FSUIPC: For FSX,P3D,MSFS2020/2024\nXPUIPC: For X-Plane 11/12\nPlease make sure FSUIPC/XPUIPC is installed'**
   String get connectionTypeTip;
 
   /// Weight unit setting

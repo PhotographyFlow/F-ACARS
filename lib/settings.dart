@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:f_acars/l10n/app_localizations.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart' as ui;
 import 'package:flutter/foundation.dart';
 import 'web_comm.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -131,152 +132,233 @@ class SettingsPageState extends State<SettingsPage> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //VA URL input box
-            SizedBox(height: 10),
-            Text(AppLocalizations.of(context)!.yourVaUrl),
-            SizedBox(height: 10),
-            PasswordFormBox(
-              controller: vaUrlController,
-              revealMode: PasswordRevealMode.visible,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              placeholder: 'https://vms.example.com',
-              validator: (text) => vaUrlValidationError,
-            ),
-            SizedBox(height: 10),
-            //Save VA URL button
-            Row(
-              children: [
-                Button(
-                  onPressed: vaUrlValidationError == null
-                      ? () {
-                          _saveSettings(
-                            'vaUrl',
-                            vaUrlController.text,
-                          ).then((_) {});
-                        }
-                      : null,
-                  child: Text(AppLocalizations.of(context)!.save),
+            Expander(
+              header: Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Row(
+                  spacing: 20,
+                  children: [
+                    Icon(FluentIcons.settings),
+                    Column(
+                      spacing: 1,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Credentials'),
+                        Text(
+                          'For app to communicate with phpVMS api',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[90],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(width: 10),
-                //clear VA URL button
-                Button(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.red),
+              ),
+              contentPadding: EdgeInsets.all(0),
+              content: Column(
+                spacing: 3,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Card(
+                    child: Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppLocalizations.of(context)!.yourVaUrl),
+                        PasswordFormBox(
+                          controller: vaUrlController,
+                          revealMode: PasswordRevealMode.visible,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          placeholder: 'https://vms.example.com',
+                          validator: (text) => vaUrlValidationError,
+                        ),
+                        Row(
+                          children: [
+                            Button(
+                              onPressed: vaUrlValidationError == null
+                                  ? () {
+                                      _saveSettings(
+                                        'vaUrl',
+                                        vaUrlController.text,
+                                      ).then((_) {});
+                                    }
+                                  : null,
+                              child: Text(AppLocalizations.of(context)!.save),
+                            ),
+                            SizedBox(width: 10),
+                            //clear VA URL button
+                            Button(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(
+                                  Colors.red,
+                                ),
+                              ),
+                              onPressed: () async {
+                                await _storage.delete(key: 'vaUrl');
+                                vaUrlController.clear();
+                                await _saveSettings(
+                                  'vaUrl',
+                                  vaUrlController.text,
+                                );
+                                setState(() {
+                                  vaUrlValidationError = '';
+                                });
+                              },
+                              child: Text(AppLocalizations.of(context)!.delete),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  onPressed: () async {
-                    await _storage.delete(key: 'vaUrl');
-                    vaUrlController.clear();
-                    await _saveSettings('vaUrl', vaUrlController.text);
-                    setState(() {
-                      vaUrlValidationError = '';
-                    });
-                  },
-                  child: Text(AppLocalizations.of(context)!.delete),
-                ),
-              ],
+                  Card(
+                    child: Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Api key input box
+                        Text(AppLocalizations.of(context)!.yourApiKey),
+                        PasswordFormBox(
+                          controller: apiKeyController,
+                          revealMode: PasswordRevealMode.peekAlways,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (text) => apiKeyValidationError,
+                        ),
+                        Row(
+                          children: [
+                            //Save api key button
+                            Button(
+                              onPressed: apiKeyValidationError == null
+                                  ? () {
+                                      _saveSettings(
+                                        'apiKey',
+                                        apiKeyController.text,
+                                      );
+                                    }
+                                  : null,
+                              child: Text(AppLocalizations.of(context)!.save),
+                            ),
+                            SizedBox(width: 10),
+                            //clear api key button
+                            Button(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(
+                                  Colors.red,
+                                ),
+                              ),
+                              onPressed: () async {
+                                await _storage.delete(key: 'apiKey');
+                                apiKeyController.clear();
+                                await _saveSettings(
+                                  'apiKey',
+                                  apiKeyController.text,
+                                );
+                                setState(() {
+                                  apiKeyValidationError = '';
+                                });
+                              },
+                              child: Text(AppLocalizations.of(context)!.delete),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            //Api key input box
             SizedBox(height: 20),
-            Text(AppLocalizations.of(context)!.yourApiKey),
-            SizedBox(height: 10),
-            PasswordFormBox(
-              controller: apiKeyController,
-              revealMode: PasswordRevealMode.peekAlways,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (text) => apiKeyValidationError,
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                //Save api key button
-                Button(
-                  onPressed: apiKeyValidationError == null
-                      ? () {
-                          _saveSettings('apiKey', apiKeyController.text);
-                        }
-                      : null,
-                  child: Text(AppLocalizations.of(context)!.save),
-                ),
-                SizedBox(width: 10),
-                //clear api key button
-                Button(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.red),
-                  ),
-                  onPressed: () async {
-                    await _storage.delete(key: 'apiKey');
-                    apiKeyController.clear();
-                    await _saveSettings('apiKey', apiKeyController.text);
-                    setState(() {
-                      apiKeyValidationError = '';
-                    });
-                  },
-                  child: Text(AppLocalizations.of(context)!.delete),
-                ),
-              ],
-            ),
 
             //test connection
-            SizedBox(height: 20),
-            Text(AppLocalizations.of(context)!.testConnection),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Button(
-                  onPressed: () {
-                    if (!_isTesting) {
-                      setState(() {
-                        _isTesting = true;
-                      });
-                      _testFuture = WebComm()
-                          .testConnection(
-                            vaUrlController,
-                            apiKeyController,
-                            apiKeyValidationError,
-                            vaUrlValidationError,
-                            null,
-                            context,
-                          )
-                          .then((result) {
-                            if (kDebugMode) {
-                              print('Result: $result');
-                            }
-                            setState(() {
-                              testConnnectionError = result;
-                              _isTesting = false;
-                            });
-                          });
-                    }
-                  },
-                  child: Text(AppLocalizations.of(context)!.test),
-                ),
-                SizedBox(width: 10),
-                _isTesting
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: ProgressRing(
-                          strokeWidth: 3,
-                          backgroundColor: Colors.grey,
-                        ),
-                      )
-                    : SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: ProgressRing(
-                          strokeWidth: 3,
-                          value: 0,
-                          backgroundColor: Colors.grey,
-                        ),
+            SettingsCard(
+              child: Row(
+                children: [
+                  Icon(FluentIcons.plug_disconnected),
+                  SizedBox(width: 20),
+                  Column(
+                    spacing: 1,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(AppLocalizations.of(context)!.testConnection),
+                      Text(
+                        'To test your connection',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[90]),
                       ),
-                SizedBox(width: 10),
-                testConnnectionError ?? Text(''),
-              ],
+                    ],
+                  ),
+                  SizedBox(width: 10),
+                  _isTesting
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: ProgressRing(
+                            strokeWidth: 3,
+                            backgroundColor: Colors.transparent,
+                          ),
+                        )
+                      : SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: ProgressRing(
+                            strokeWidth: 3,
+                            value: 0,
+                            backgroundColor: Colors.transparent,
+                          ),
+                        ),
+                  Spacer(),
+                  testConnnectionError ?? Text(''),
+                  SizedBox(width: 10),
+                  Button(
+                    onPressed: () {
+                      if (!_isTesting) {
+                        setState(() {
+                          _isTesting = true;
+                        });
+                        _testFuture = WebComm()
+                            .testConnection(
+                              vaUrlController,
+                              apiKeyController,
+                              apiKeyValidationError,
+                              vaUrlValidationError,
+                              null,
+                              context,
+                            )
+                            .then((result) {
+                              if (kDebugMode) {
+                                print('Result: $result');
+                              }
+                              setState(() {
+                                testConnnectionError = result;
+                                _isTesting = false;
+                              });
+                            });
+                      }
+                    },
+                    child: Text(AppLocalizations.of(context)!.test),
+                  ),
+                ],
+              ),
             ),
+
             SizedBox(height: 20),
 
             //select weight unit
+            SettingsCard(
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: Icon(ui.FluentIcons.ruler_48_regular),
+                  ),
+                  SizedBox(width: 20),
+                  Text(AppLocalizations.of(context)!.weightUnit),
+                ],
+              ),
+            ),
             Text(AppLocalizations.of(context)!.weightUnit),
             SizedBox(height: 10),
 
@@ -299,12 +381,12 @@ class SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 20),
             Row(
               children: [
-                Text('Connection type'),
+                Text(AppLocalizations.of(context)!.connectionType),
                 SizedBox(width: 7),
                 Padding(
                   padding: const EdgeInsets.only(top: 2.5),
                   child: Tooltip(
-                    message: 'Horizontal ToolTip',
+                    message: AppLocalizations.of(context)!.connectionTypeTip,
                     displayHorizontally: true,
                     useMousePosition: false,
                     style: const TooltipThemeData(preferBelow: true),
@@ -355,6 +437,33 @@ class SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class SettingsCard extends StatelessWidget {
+  const SettingsCard({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 72.0),
+      decoration: ShapeDecoration(
+        color: FluentTheme.of(context).resources.cardBackgroundFillColorDefault,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: FluentTheme.of(context).resources.cardStrokeColorDefault,
+          ),
+          borderRadius: BorderRadius.vertical(
+            top: const Radius.circular(6.0),
+            bottom: Radius.circular(6.0),
+          ),
+        ),
+      ),
+      padding: const EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
+      alignment: AlignmentDirectional.centerStart,
+      child: child,
     );
   }
 }

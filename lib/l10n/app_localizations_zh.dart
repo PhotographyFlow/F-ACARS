@@ -69,7 +69,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get connectionType => '连接方式';
 
   @override
-  String get connectionTypeTip => 'x64: 适用于64位模拟器 (如 P3Dv4+, MSFS)\nx32: 适用于32位模拟器 (如 P3Dv1-3, FSX)\n请确保fsuipc已安装';
+  String get connectionTypeTip => 'FSUIPC: 适用于 FSX,P3D,MSFS2020/2024\nXPUIPC: 适用于 X-Plane 11/12\n请确保 FSUIPC/XPUIPC 已安装';
 
   @override
   String get weightUnit => '重量单位';
@@ -99,7 +99,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aircraftType => '飞机型号';
 
   @override
-  String get aircraftIcaoCode => '飞机ICAO代码';
+  String get aircraftIcaoCode => '飞机ICAO';
 
   @override
   String get aircraftName => '名字';
